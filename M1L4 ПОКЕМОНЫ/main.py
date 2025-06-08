@@ -1,9 +1,9 @@
-import telebot 
+import telebot
 from config import token
 
 from logic import *
 
-bot = telebot.TeleBot(token) 
+bot = telebot.TeleBot(token)
 
 @bot.message_handler(commands=['go'])
 def start(message):
@@ -35,23 +35,14 @@ def attack_pok(message):
             bot.send_message(message.chat.id, "Чтобы атаковать, нужно ответить на сообщения того, кого хочешь атаковать")
 
 
-@bot.message_handler(commands=['go'])
-def go(message):
-    if message.from_user.username not in Pokemon.pokemons.keys():
-        pokemon = Pokemon(message.from_user.username)
-        bot.send_message(message.chat.id, pokemon.info())
-        bot.send_photo(message.chat.id, pokemon.show_img())
-    else:
-        bot.reply_to(message, "у тебя уже есть покемон")
+@bot.message_handler(commands=['feed'])
+def feed_pok(message):
+        if message.from_user.username in Pokemon.pokemons.keys():
+            pok = Pokemon.pokemons[message.from_user.username]
+            response = pok.feed()
+            bot.send_message(message.chat.id, response)
+        else:
+            bot.send_message(message.chat.id, "У вас нент покемона")
 
 
 bot.infinity_polling(none_stop=True)
-
-
-@bot.message_handler(commands=['info'])
-def info(message):
-    if message.from_user.username in Pokemon.pokemons.keys():
-        pok = Pokemon.pokemons[message.from_user.username]
-        bot.send_message(message.chat.id, pok.info())
-    else:
-        bot.reply_to(message, "информация о твоем покемоне")
